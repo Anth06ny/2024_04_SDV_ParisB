@@ -48,6 +48,11 @@ android {
 
 dependencies {
 
+    //requete web
+    implementation("com.squareup.okhttp3:okhttp:+")
+    //Parsing JSON
+    implementation("com.google.code.gson:gson:+")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

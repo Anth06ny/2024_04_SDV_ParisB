@@ -1,12 +1,12 @@
 package com.amonteiro.a2024_04_sdv_parisb.exo
 
+
 fun main() {
 
     var res = scanNumber("Donnez un nombre : ")
     println("res =$res")
 
     println("fin")
-
 
 }
 
