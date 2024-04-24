@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">2024_04_SDV_ParisB</string>
-    <string name="mykey">toto</string>
+    <string name="load_data">Load data</string>
 </resources>

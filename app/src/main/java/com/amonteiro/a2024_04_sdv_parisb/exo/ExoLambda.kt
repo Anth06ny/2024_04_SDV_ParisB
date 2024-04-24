@@ -1,8 +1,33 @@
 package com.amonteiro.a2024_04_sdv_parisb.exo
 
 fun main() {
-    exo2()
+    var toto = MyObservable(5)
+
+    toto.observator = {
+        println(it)
+    }
+
+    toto.value = 6
+
+
 }
+
+class MyObservable(value : Int){
+    var value  = value
+        set(newValue) {
+            field = newValue
+
+            observator?.invoke(newValue)
+        }
+
+    var observator : ((Int)->Unit)? = null
+
+
+
+}
+
+
+
 
 data class PersonBean(var name:String, var note:Int)
 
