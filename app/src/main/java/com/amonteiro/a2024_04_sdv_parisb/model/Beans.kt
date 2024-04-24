@@ -22,6 +22,30 @@ fun main() {
 
 }
 
+class RandomName() {
+    private val list = arrayListOf("Toto", "Tata", "Titi")
+
+    private var oldValue = ""
+
+    fun add(name:String?) = if(!name.isNullOrBlank() &&  name !in list) list.add(name) else false
+
+    fun next() = list.random()
+
+    fun next2() = Pair(nextDiff(), nextDiff())
+
+    fun nextDiffV2() = list.filter { it != oldValue}.random().also { oldValue = it }
+
+    fun nextDiff(): String {
+        var newValue = next()
+        while(newValue == oldValue) {
+            newValue = next()
+        }
+
+        oldValue = newValue
+        return newValue
+    }
+}
+
 class ThermometerBean(var min:Int, var max : Int, value: Int) {
 
     var value = value.coerceIn(min, max)
