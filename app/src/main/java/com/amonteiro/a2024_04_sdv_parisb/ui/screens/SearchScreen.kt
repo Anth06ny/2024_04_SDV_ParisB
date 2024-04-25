@@ -33,6 +33,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,11 +55,11 @@ import okhttp3.Route
 
 @Composable
 fun SearchScreen(mainViewModel: MainViewModel, navHostController : NavHostController?) {
-    var searchText = remember {        mutableStateOf("")    }
+
 
     Column(modifier = Modifier.padding(8.dp)) {
 
-        SearchBar(searchText = searchText)
+        SearchBar(searchText = mainViewModel.searchText)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -67,7 +68,7 @@ fun SearchScreen(mainViewModel: MainViewModel, navHostController : NavHostContro
             modifier = Modifier.weight(10f),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-            val filterList = mainViewModel.pictureList.filter { it.title.contains(searchText.value, true) }
+            val filterList = mainViewModel.pictureList.filter { it.title.contains(mainViewModel.searchText.value, true) }
 
             items(filterList.size) {
                 PictureRowItem(
@@ -79,7 +80,7 @@ fun SearchScreen(mainViewModel: MainViewModel, navHostController : NavHostContro
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Button(
-                onClick = { searchText.value = "" },
+                onClick = { mainViewModel.searchText.value = "" },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
                 Icon(
@@ -92,7 +93,7 @@ fun SearchScreen(mainViewModel: MainViewModel, navHostController : NavHostContro
             }
 
             Button(
-                onClick = { /* Do something! */ },
+                onClick = { mainViewModel.loadFakeData() },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
                 Icon(
@@ -185,7 +186,11 @@ fun SearchScreenPreview() {
     //Utilisé par exemple dans MainActivity.kt sous setContent {...}
     _2024_04_SDV_ParisBTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            SearchScreen(MainViewModel(), null)
+            val mainViewModel = MainViewModel()
+            mainViewModel.loadFakeData()
+            mainViewModel.searchText.value = "BC"
+
+            SearchScreen(mainViewModel, null)
         }
     }
 }
