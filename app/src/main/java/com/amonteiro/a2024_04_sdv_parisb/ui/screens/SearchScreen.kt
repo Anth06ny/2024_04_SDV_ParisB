@@ -41,16 +41,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.amonteiro.a2024_04_sdv_parisb.R
 import com.amonteiro.a2024_04_sdv_parisb.model.PictureBean
+import com.amonteiro.a2024_04_sdv_parisb.ui.Routes
 import com.amonteiro.a2024_04_sdv_parisb.ui.theme._2024_04_SDV_ParisBTheme
 import com.amonteiro.a2024_04_sdv_parisb.viewmodel.MainViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import okhttp3.Route
 
 @Composable
-fun SearchScreen(mainViewModel: MainViewModel) {
+fun SearchScreen(mainViewModel: MainViewModel, navHostController : NavHostController?) {
     var searchText = remember {        mutableStateOf("")    }
 
     Column(modifier = Modifier.padding(8.dp)) {
@@ -67,7 +70,10 @@ fun SearchScreen(mainViewModel: MainViewModel) {
             val filterList = mainViewModel.pictureList.filter { it.title.contains(searchText.value, true) }
 
             items(filterList.size) {
-                PictureRowItem(data = filterList[it])
+                PictureRowItem(
+                    data = filterList[it],
+                    onPictureClick = { navHostController?.navigate(Routes.DetailScreen.withObject(filterList[it]))}
+                )
             }
         }
 
@@ -126,7 +132,7 @@ fun SearchBar(modifier: Modifier = Modifier, searchText: MutableState<String>) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable //Composable affichant 1 PictureBean
-fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
+fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean, onPictureClick: () -> Unit) {
 
     var fullText by remember {        mutableStateOf(false) }
 
@@ -152,6 +158,7 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
             modifier = Modifier
                 .heightIn(max = 100.dp) //Sans hauteur il prendra tous l'écran
                 .widthIn(max = 100.dp)
+                .clickable(onClick = onPictureClick)
         )
 
 
@@ -178,7 +185,7 @@ fun SearchScreenPreview() {
     //Utilisé par exemple dans MainActivity.kt sous setContent {...}
     _2024_04_SDV_ParisBTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            SearchScreen(MainViewModel())
+            SearchScreen(MainViewModel(), null)
         }
     }
 }

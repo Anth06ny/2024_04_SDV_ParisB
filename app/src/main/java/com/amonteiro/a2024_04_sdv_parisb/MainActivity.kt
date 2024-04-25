@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.amonteiro.a2024_04_sdv_parisb.ui.AppNavigation
 import com.amonteiro.a2024_04_sdv_parisb.ui.screens.SearchScreen
 import com.amonteiro.a2024_04_sdv_parisb.ui.theme._2024_04_SDV_ParisBTheme
 import com.amonteiro.a2024_04_sdv_parisb.viewmodel.MainViewModel
@@ -34,8 +35,7 @@ class MainActivity : ComponentActivity() {
             _2024_04_SDV_ParisBTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    SearchScreen(MainViewModel())
-
+                    AppNavigation()
                 }
             }
         }
