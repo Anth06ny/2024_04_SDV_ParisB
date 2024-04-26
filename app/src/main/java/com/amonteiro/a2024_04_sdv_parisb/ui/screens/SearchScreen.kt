@@ -68,7 +68,7 @@ fun SearchScreen(mainViewModel: MainViewModel, navHostController : NavHostContro
             modifier = Modifier.weight(10f),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-            val filterList = mainViewModel.pictureList.filter { it.title.contains(mainViewModel.searchText.value, true) }
+            val filterList = mainViewModel.pictureList//.filter { it.title.contains(mainViewModel.searchText.value, true) }
 
             items(filterList.size) {
                 PictureRowItem(
@@ -93,7 +93,7 @@ fun SearchScreen(mainViewModel: MainViewModel, navHostController : NavHostContro
             }
 
             Button(
-                onClick = { mainViewModel.loadFakeData() },
+                onClick = { mainViewModel.loadWeathers() },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
                 Icon(

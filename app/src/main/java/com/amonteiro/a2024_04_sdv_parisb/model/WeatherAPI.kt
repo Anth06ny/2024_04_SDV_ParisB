@@ -11,9 +11,11 @@ import java.io.InputStreamReader
 //Utilisation
 fun main() {
 
-    val weather = WeatherAPI.loadWeather("Nice")
-    println("Il fait ${weather.main.temp} à ${weather.name} avec un vent de ${weather.wind.speed}m/s")
+//    val weather = WeatherAPI.loadWeather("Nice")
+//    println("Il fait ${weather.main.temp} à ${weather.name} avec un vent de ${weather.wind.speed}m/s")
 
+    val weathers = WeatherAPI.loadWeatherAround("toulouse")
+    println(weathers[0])
 }
 
 object WeatherAPI {
@@ -21,12 +23,26 @@ object WeatherAPI {
     val gson = Gson()
 
 
-    const val URL_API = "https://api.openweathermap.org/data/2.5/weather?appid=b80967f0a6bd10d23e44848547b26550&units=metric&lang=fr&q="
+    const val URL_API = "https://api.openweathermap.org/data/2.5"
+    const val PARAMS = "appid=b80967f0a6bd10d23e44848547b26550&units=metric&lang=fr"
 
-    fun loadWeather(cityName: String): WeatherBean {
-
+    fun loadWeatherAround(cityName: String): List<WeatherBean> {
         //Requete
-        val json: String = sendGet(URL_API + cityName)
+        val json: String = sendGet("$URL_API/find?$PARAMS&q=$cityName")
+        val res =  gson.fromJson(json, WeatherAround::class.java).list
+
+        //Comme foreach mais retourne la collection
+        return res.onEach {
+            it.weather.forEach {
+                it.icon = "https://openweathermap.org/img/wn/${it.icon}@4x.png"
+            }
+        }
+    }
+
+    //"https://api.openweathermap.org/data/2.5/weather?appid=b80967f0a6bd10d23e44848547b26550&units=metric&lang=fr&q="
+    fun loadWeather(cityName: String): WeatherBean {
+        //Requete
+        val json: String = sendGet("$URL_API/weather?$PARAMS&q=$cityName")
         return gson.fromJson(json, WeatherBean::class.java)
     }
 
@@ -72,8 +88,9 @@ object WeatherAPI {
 /* -------------------------------- */
 // Beans
 /* -------------------------------- */
-
-data class WeatherBean(var name: String, var wind: WindBean, var main: TempBean)
+data class WeatherAround(val list : List<WeatherBean>)
+data class WeatherBean(var name: String, var wind: WindBean, var main: TempBean, var id : Int, var weather:List<DescriptionBean>)
 data class WindBean(var speed: Double)
 data class TempBean(var temp: Double)
+data class DescriptionBean(var description: String, var icon:String)
 
