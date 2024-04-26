@@ -1,6 +1,7 @@
 package com.amonteiro.a2024_04_sdv_parisb.ui.screens
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +19,11 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,8 +34,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -45,35 +46,43 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.amonteiro.a2024_04_sdv_parisb.R
 import com.amonteiro.a2024_04_sdv_parisb.model.PictureBean
+import com.amonteiro.a2024_04_sdv_parisb.ui.MyError
 import com.amonteiro.a2024_04_sdv_parisb.ui.Routes
 import com.amonteiro.a2024_04_sdv_parisb.ui.theme._2024_04_SDV_ParisBTheme
 import com.amonteiro.a2024_04_sdv_parisb.viewmodel.MainViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import okhttp3.Route
 
 @Composable
-fun SearchScreen(mainViewModel: MainViewModel, navHostController : NavHostController?) {
+fun SearchScreen(mainViewModel: MainViewModel, navHostController: NavHostController?) {
 
 
     Column(modifier = Modifier.padding(8.dp)) {
 
         SearchBar(searchText = mainViewModel.searchText)
 
+        MyError(errorMessage = mainViewModel.errorMessage)
+
+        AnimatedVisibility(visible = mainViewModel.runInProgress, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+            CircularProgressIndicator()
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
+
 
         //Permet de remplacer très facilement le RecyclerView. LazyRow existe aussi
         LazyColumn(
             modifier = Modifier.weight(10f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
 
             val filterList = mainViewModel.pictureList//.filter { it.title.contains(mainViewModel.searchText.value, true) }
 
             items(filterList.size) {
                 PictureRowItem(
                     data = filterList[it],
-                    onPictureClick = { navHostController?.navigate(Routes.DetailScreen.withObject(filterList[it]))}
+                    onPictureClick = { navHostController?.navigate(Routes.DetailScreen.withObject(filterList[it])) }
                 )
             }
         }
@@ -135,12 +144,13 @@ fun SearchBar(modifier: Modifier = Modifier, searchText: MutableState<String>) {
 @Composable //Composable affichant 1 PictureBean
 fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean, onPictureClick: () -> Unit) {
 
-    var fullText by remember {        mutableStateOf(false) }
+    var fullText by remember { mutableStateOf(false) }
 
-    Row(modifier = Modifier
-        .background(Color.White)
-        .fillMaxWidth()
-        .then(modifier)
+    Row(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxWidth()
+            .then(modifier)
 
     ) {
 
@@ -166,20 +176,23 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean, onPictureCl
         Column(modifier = Modifier.clickable {
             fullText = !fullText
         }) {
-            Text(text = data.title,fontSize = 20.sp)
+            Text(text = data.title, fontSize = 20.sp)
             Spacer(Modifier.size(8.dp))
-            Text(text = if(fullText) data.longText else (data.longText.take(20) + "..."),
+            Text(
+                text = if (fullText) data.longText else (data.longText.take(20) + "..."),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.animateContentSize())
+                modifier = Modifier.animateContentSize()
+            )
         }
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES,
+@Preview(
+    showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES,
     locale = "FR"
-    )
+)
 @Composable
 fun SearchScreenPreview() {
     //Il faut remplacer NomVotreAppliTheme par le thème de votre application
@@ -189,6 +202,8 @@ fun SearchScreenPreview() {
             val mainViewModel = MainViewModel()
             mainViewModel.loadFakeData()
             mainViewModel.searchText.value = "BC"
+            mainViewModel.errorMessage = "Une erreur"
+            mainViewModel.runInProgress = true
 
             SearchScreen(mainViewModel, null)
         }

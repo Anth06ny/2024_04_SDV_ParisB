@@ -35,7 +35,7 @@ fun main() {
 
 class MainViewModel : ViewModel() {
     val pictureList = mutableStateListOf<PictureBean>()
-    var searchText = mutableStateOf("")
+    var searchText = mutableStateOf("Nice")
     var runInProgress by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
 
@@ -47,6 +47,7 @@ class MainViewModel : ViewModel() {
     fun loadWeathers() {
         //Pour etre courant qu'une tache est en cours
         runInProgress = true
+        errorMessage = ""
         //Tache asynchrone
 
         viewModelScope.launch(Dispatchers.Default) {
